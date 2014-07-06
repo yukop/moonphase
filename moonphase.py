@@ -21,16 +21,17 @@ api = tweepy.API(auth, secure=True, api_root='/1.1')
 a = Astral()
 city_name = 'Tokyo'
 a.solar_depression = 'civil'
-city = a[city_name]
-timezone = city.timezone
+tokyo = a[city_name]
+timezone = tokyo.timezone
 
+jstnow = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 one_day = datetime.timedelta(days=1)
-tomorrow = datetime.datetime.now() + one_day
+tomorrow = jstnow + one_day
 
-sun = city.sun(date=datetime.datetime.now(), local=True)
-sun1 = city.sun(date=tomorrow, local=True)
+day1 = tokyo.sun(date=jstnow, local=True)
+day2 = tokyo.sun(date=tomorrow, local=True)
 
-moonphase = a.moon_phase(datetime.datetime.now(), None)
+moonphase = a.moon_phase(jstnow, None)
 if moonphase == 0:
   meter = "■■■■■■■■■■■■■■"
 elif moonphase == 1:
@@ -93,7 +94,7 @@ elif moonphase == 28:
 if moonphase > 29:
   tweet = "うーん。計算できなかったみたい。"
 else:
-  tweet = 'きょうの月齢は' + str(moonphase) + 'だよ。' + city_name + 'の日没は' + str(sun['sunset'].strftime("%H時%M分%S秒")) + 'くらい、明日の日の出は' + str(sun1['sunrise'].strftime("%H時%M分%S秒")) + 'くらいだよ。' + meter
+  tweet = meter + ' ' + jstnow.strftime("%-m月%-d日") + 'の月齢は' + str(moonphase) + 'くらいだよ。' + city_name + 'の日没はだいたい' + str(day1['sunset'].strftime("%-H時%-M分%-S秒")) + '、明日の日の出はだいたい' + str(day2['sunrise'].strftime("%-H時%-M分%-S秒")) + 'だよ。'
 
 status = tweet
 api.update_status(status)
